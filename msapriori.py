@@ -18,12 +18,10 @@ def msApriori(infile, paramfile, outfile):
         for t in i_file:
             T.append([x for x in re.sub('[{}\n\r ]','',t).split(",")])
     num_of_trans = len(T)
-    #print('num of tr: ',num_of_trans)
     itemset=[]
     for item in T:
         itemset+=item
     itemset = [x for x in list(set(itemset))]
-    #print(itemset)
     #gather MIS values and other parameter values
     mis = dict()
     not_together = list()
@@ -32,9 +30,7 @@ def msApriori(infile, paramfile, outfile):
         for line in p_file:
             line = re.sub('[ \r\n]','',line)
             if line[0:3]=="MIS":
-                #print('line: ',line)
                 key = re.match(r"^.*\((.*)\).*$",line.split("=")[0]).group(1)
-                #print('key: ',key)
                 if key in itemset:
                     value = float(line.split("=")[1])
                     mis[key] = value
@@ -54,7 +50,6 @@ def msApriori(infile, paramfile, outfile):
             else:
                 continue
     import operator
-    #print('mis: ',mis)
     
     #sort dictionary with mis values according to key
     M = OrderedDict(sorted(mis.items(), key=operator.itemgetter(1)))
@@ -70,8 +65,6 @@ def msApriori(infile, paramfile, outfile):
     import copy
     item_sup = copy.deepcopy(item_freq)
     item_sup.update((k, round(v * (1/int(num_of_trans)),4)) for k,v in item_sup.items())
-    #print('must-have: ',must_together)
-    #print('mis: ')
     #start writing to output file
     with open("output/"+outfile, "w") as o_file:
         F = dict()
@@ -81,9 +74,6 @@ def msApriori(infile, paramfile, outfile):
         #counter to count items satisfying constraints
         count_F1=0
         for item in M.keys():
-            #print('\nitem: ',item)
-            #print('item_sup[item]: ',item_sup[item])
-            #print('mis[item]: ',mis[item])
             if item_sup[item]>=mis[item]:
                     temp_list = list()
                     temp_list.append(item)
@@ -102,7 +92,6 @@ def msApriori(infile, paramfile, outfile):
         #loop till empty frequent itemset generates
         while True:
             C[k]=list()
-            #print(mis)
             if k==2:
                 #generate candidate for k=2
                 C[k] = level2_candidate_gen(L, sdc, mis, item_sup) 
